@@ -1,0 +1,162 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diabetes Prediction</title>
+    <style>
+        body {
+            background-image: url("{% static 'DiabetesPrediction/images/diabtetes2.jpg' %}");
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+        }
+
+        .main {
+            width: 550px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #0086b3;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        input, button {
+            width: 90%;
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #4dc3ff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            padding: 10px;
+        }
+
+        button:hover {
+            background-color: #0086b3;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4dc3ff;
+            color: white;
+        }
+
+        .logout {
+            display: inline-block;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #0086b3;
+            font-weight: bold;
+        }
+
+        .logout:hover {
+            color: #004d66;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="main">
+        <h1>Enter Your Details for Diabetes Prediction</h1>
+
+        <form action="{% url 'result' %}" method="POST">
+            {% csrf_token %}
+            <table>
+                <tr><td align="right">Pregnancies:</td><td align="left"><input type="text" name="n1"></td></tr>
+                <tr><td align="right">Glucose:</td><td align="left"><input type="text" name="n2"></td></tr>
+                <tr><td align="right">Blood Pressure:</td><td align="left"><input type="text" name="n3"></td></tr>
+                <tr><td align="right">Skin Thickness:</td><td align="left"><input type="text" name="n4"></td></tr>
+                <tr><td align="right">Insulin:</td><td align="left"><input type="text" name="n5"></td></tr>
+                <tr><td align="right">BMI:</td><td align="left"><input type="text" name="n6"></td></tr>
+                <tr><td align="right">Diabetes Pedigree Function:</td><td align="left"><input type="text" name="n7"></td></tr>
+                <tr><td align="right">Age:</td><td align="left"><input type="text" name="n8"></td></tr>
+            </table>
+            <button type="submit">Predict</button>
+        </form>
+
+        {% if result %}
+            <h2>Prediction Result:</h2>
+            {% if result == "Diabetic" %}
+                <p style="color: red; font-weight: bold;">{{ result }}</p>
+            {% else %}
+                <p style="color: green; font-weight: bold;">{{ result }}</p>
+            {% endif %}
+
+            {% if top_factors %}
+                <h3>Top Contributing Factors:</h3>
+                <ul>
+                    {% for factor, importance in top_factors %}
+                        <li><strong>{{ factor }}</strong>: {{ importance|floatformat:4 }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endif %}
+
+        <h3>Past Predictions</h3>
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Result</th>
+            </tr>
+            {% for entry in history %}
+            <tr>
+                <td>{{ entry.created_at|date:"F d, Y, g:i a" }}</td>  <!-- Properly formatted date -->
+                <td style="color: {% if entry.prediction == 'Diabetic' %}red{% else %}green{% endif %}; font-weight: bold;">
+                     {{ entry.prediction }}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">No past predictions found.</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <a href="{% url 'logout' %}" class="logout">Logout</a>
+    </div>
+</div>
+
+</body>
+</html>

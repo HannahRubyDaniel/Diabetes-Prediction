@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Prediction History - My Site
+{% endblock %}
+
+{% block content %}
+<h2>Your Past Predictions</h2>
+{% if predictions %}
+    <table border="1">
+        <tr>
+            <th>Date</th>
+            <th>Pregnancies</th>
+            <th>Glucose</th>
+            <th>Blood Pressure</th>
+            <th>Skin Thickness</th>
+            <th>Insulin</th>
+            <th>BMI</th>
+            <th>Diabetes Pedigree</th>
+            <th>Age</th>
+            <th>Prediction</th>
+        </tr>
+        {% for p in predictions %}
+        <tr>
+            <td>{{ p.created_at }}</td>
+            <td>{{ p.pregnancies }}</td>
+            <td>{{ p.glucose }}</td>
+            <td>{{ p.blood_pressure }}</td>
+            <td>{{ p.skin_thickness }}</td>
+            <td>{{ p.insulin }}</td>
+            <td>{{ p.bmi }}</td>
+            <td>{{ p.diabetes_pedigree_function }}</td>
+            <td>{{ p.age }}</td>
+            <td><strong>{{ p.prediction }}</strong></td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No past predictions found.</p>
+{% endif %}
+<a href="{% url 'predict' %}">Make a new prediction</a>
+{% endblock %}
